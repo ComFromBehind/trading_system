@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Title</title>
 </head>
 <body>
@@ -43,8 +45,8 @@
             <tr>
                 <th>종목명</th>
                 <th>매수개수</th>
-                <th>거래 금액</th>
                 <th>예상 판매금액</th>
+
             </tr>
             </thead>
             <tbody>
@@ -234,14 +236,13 @@ for (var [itemname, temp] of count) {
     cell2.textContent = positiveSum;
 
     var cell3 = document.createElement("td");
-    cell3.textContent = positiveAllsum; // 양수 allsum 부호 변경
-    var cell4 = document.createElement("td");
-    cell4.textContent = set2.get(itemname) * positiveSum;
+    cell3.textContent = set2.get(itemname)*positiveSum; // 양수 allsum 부호 변경
+
     // 행에 셀 추가
     newRow.appendChild(cell1);
     newRow.appendChild(cell2);
     newRow.appendChild(cell3);
-    newRow.appendChild(cell4);
+
     // tbody에 행 추가
     tbody.appendChild(newRow);
 
