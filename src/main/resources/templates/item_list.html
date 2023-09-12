@@ -1,0 +1,52 @@
+
+<table xmlns:th="http://www.thymeleaf.org">
+    <thead>
+    <tr>
+        <th>종목번호</th>
+        <th>종목명</th>
+        <th>가격</th>
+        <th>개수</th>
+    </tr>
+    </thead>
+    <tbody id="itemTableBody">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url:'/item/happylife',
+                method:'GET',
+                dataType:'json',
+                success:function(data){
+
+                var itemList = data;
+                var tbody = $('#itemTableBody');
+                for (var i = 0; i < itemList.length; i++) {
+                var item = itemList[i];
+                var row = $('<tr>');
+                row.append('<td>' + item.number + '</td>');
+                row.append('<td name="data1" data-value="' + item.name + '">' + item.name + '</td>');
+                row.append('<td>' + item.price + '</td>');
+                row.append('<td>' + item.howmany + '</td>');
+                tbody.append(row);
+            }
+        },
+
+        error: function() {
+            // Ajax 요청이 실패하면 오류 처리를 수행합니다.
+            console.error('Ajax request failed');
+        }
+    });
+});
+    </script>
+    </tbody>
+    <form action ="/item/signup/list" method="post">
+        <div class="form-group">
+            <label for="name"> 종목명</label>
+            <input type="text" id="name" name="name" placeholder="종목을 입력하세요">
+
+        </div>
+        <button type="submit">거래</button>
+    </form>
+</table>
+
+

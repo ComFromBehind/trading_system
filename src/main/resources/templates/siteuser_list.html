@@ -1,0 +1,18 @@
+<table xmlns:th="http://www.w3.org/1999/xhtml">
+    <thead>
+    <tr>
+        <th>회원번호</th>
+        <th>아이디</th>
+        <th>자산</th>
+        <th>비번</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${siteUserList}">
+        <td th:text="${user.Number}"></td>
+        <td th:text="${user.LoginID}"></td>
+        <td th:text="${user.Budget}"></td>
+        <td th:text="${user.Password}"></td>
+    </tr>
+    </tbody>
+</table>

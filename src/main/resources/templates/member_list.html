@@ -1,0 +1,29 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml"></html>
+<div layout:fragment="content" class="container my-3">
+    <h2>관리자 명단</h2>
+<table class="table" xmlns:th="http://www.w3.org/1999/xhtml">
+    <thead class="table-dark">
+    <tr>
+        <th>아이디</th>
+        <th>자산</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${memberList}">
+        <td th:text="${user.LoginID}"></td>
+        <td th:text="${user.Budget}"></td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+<li>
+    <a th:href="@{/user/signup}">회원가입</a>
+    <a th:href="@{/user/signup/list}">회원리스트</a>
+    <a th:href="@{/item/signup/list}">아이템리스트</a>
+    <a th:href="@{/item/signup}">아이템등록</a>
+    <a th:href="@{/user/mypage}"}>MY page</a>
+</li>
+</div>

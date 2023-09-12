@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        #box-left{
+            border:1px solid gold;
+            background:red;
+            float:left;
+            width:33%;
+        }
+        #box-center{
+            width:33%;
+            text-align:center;
+        }
+        #box-right{
+
+        }
+    </style>
+    <script type="text/javascript">
+      function showClock(){
+
+        var currentDate = new Date();
+        var divClock = document.getElementById('divClock');
+        var msg = "현재 시간 : ";
+        if(currentDate.getHours()>12){      //시간이 12보다 크다면 오후 아니면 오전
+          msg += "오후 ";
+          msg += currentDate.getHours()-12+"시 ";
+       }
+       else {
+         msg += "오전 ";
+         msg += currentDate.getHours()+"시 ";
+       }
+
+        msg += currentDate.getMinutes()+"분 ";
+        msg += currentDate.getSeconds()+"초";
+
+        divClock.innerText = msg;
+
+        if (currentDate.getMinutes()>58) {    //정각 1분전부터 빨강색으로 출력
+          divClock.style.color="red";
+        }
+        setTimeout(showClock,1000);  //1초마다 갱신
+      }
+
+      function ohayo(){
+
+      }
+    </script>
+
+
+</head>
+<body onload="showClock()">
+<h2> 거래페이지</h2>
+
+    <!-- 에러부분 고칠 것 -->
+
+종목명 : <span th:text = "${itemname}"> </span>
+
+<hr>
+가격 :
+<hr>
+
+<br>
+<br>
+<div>
+    <form th:action="@{/item/trade}" method="post">
+        <span>구매자 : <span name="username" th:text="${username}"></span></span><br>
+            <span>아이템 : <span name="itemname" th:text="${itemname}" > </span></span>
+        <div> <input type="radio"  name="buy" value=1 > 구매 </div>
+        <div> <input type="radio"  name="buy" value=2> 판매</div>
+        <div>개수 : <input type="text" name="howmany" > </div>
+        <div>가격 : <input type="text" name="allsum" > </div>
+        <button type="submit">거래 예약</button>
+    </form>
+
+
+</div>
+
+        <div id ="buyer-list-container" style="border:1px solid gold; float:left; width:33%">
+            <h2>구매자 리스트</h2>
+                    <table>
+                    <thead>
+                        <tr>
+                        <th>종목명</th>
+                        <th>제시가</th>
+                        <th>거래자</th>
+                        <th>개수</th>
+                    </tr>
+                    </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+        </div>
+
+<script th:inline="javascript">
+	            /*<![CDATA[*/
+                var buyer = /*[[ ${items} ]]*/;
+                var seller = /*[[${items2}]]*/;
+                var anItem = /*[[${itemname}]]*/
+                var i = 0;
+                var j = 0;
+               async function ItemObject() {
+
+    var nowPrice = 50;
+
+    try {
+        var response = await $.ajax({
+            url: '/item/happy/happy3',
+            method: 'GET',
+            dataType: 'json'
+        });
+        nowPrice = response.price;
+    } catch (error) {
+        console.error('ajax 요청 실패');
+    }
+
+    while (seller[i] != null && buyer[j] != null) {
+        while (seller[i].checked == 3 || buyer[j].checked == 3) {
+            if (seller[i].checked == 3) i++;
+            if (buyer[j].checked == 3) j++;
+        }
+        if (seller[i] == null || buyer[j] == null) break;
+        if (seller[i].allsum > buyer[j].allsum) break;
+
+        if (seller[i].allsum > nowPrice) {
+            nowPrice = seller[i].allsum;
+            var buyno = buyer[j].id;
+            var sellno = seller[i].id;
+
+            try {
+                var response = await $.ajax({
+                    url: '/item/item/item',
+                    method: 'POST',
+                    data: {
+                        seller_id: sellno,
+                        buyer_id: buyno,
+                        nowPrice: nowPrice
+                    }
+                });
+                console.log('데이터베이스 변경 성공');
+            } catch (error) {
+                console.error('데이터베이스 변경 실패', error);
+            }
+
+            i++;
+            j++;
+        } else if (buyer[j].allsum < nowPrice) {
+            nowPrice = buyer[j].allsum;
+            var sellno = seller[i].id;
+            var buyno = buyer[j].id;
+
+            try {
+                var response = await $.ajax({
+                    url: '/item/item/item',
+                    method: 'POST',
+                    data: {
+                        seller_id: sellno,
+                        buyer_id: buyno,
+                        nowPrice: nowPrice
+                    }
+                });
+                console.log('데이터베이스 변경 성공');
+            } catch (error) {
+                console.error('데이터베이스 변경 실패', error);
+            }
+
+            i++;
+            j++;
+        } else {
+            nowPrice = nowPrice;
+            var sellno = seller[i].id;
+            var buyno = buyer[j].id;
+
+            try {
+                var response = await $.ajax({
+                    url: '/item/item/item',
+                    method: 'POST',
+                    data: {
+                        seller_id: sellno,
+                        buyer_id: buyno,
+                        nowPrice: nowPrice
+                    }
+                });
+                console.log('데이터베이스 변경 성공');
+            } catch (error) {
+                console.error('데이터베이스 변경 실패', error);
+            }
+
+            i++;
+            j++;
+        }
+    }
+}
+
+
+	            /*]]>*/
+</script>
+        <div style="border:1px solid red; float:left;width:33%">
+            <div>
+            <h1>현재가</h1>
+            <h1 id="nowPrice3" name="price"></h1>
+            </div>
+            <div id="divClock" class="clock"></div>
+            <button type="button" onclick="ItemObject()">버튼</button>
+            <button type="button" onclick="reload()">test</button>
+            <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+        </div>
+<!-- 해당 부분을 원하는 위치에 추가하세요. -->
+<div id="seller-list-container">
+    <h2>판매자 리스트</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>종목명</th>
+            <th>제시가</th>
+            <th>거래자</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<script>
+    var intervalId;
+
+    function f() {
+        // 페이지가 로드되면 판매자 리스트를 가져와서 테이블에 추가합니다.
+       loadSellerList();
+       loadBuyerList();
+       loadNowPrice();
+       console.log("happy");
+       var tbody = document.querySelector('#seller-list-container tbody');
+       var tbody2 = document.querySelector('#buyer-list-container tbody');
+       tbody.innerHTML = '';
+       tbody2.innerHTML = '';
+    }
+
+    function Itemandrun(){
+        ItemObject();
+        f();
+
+    }
+
+    setInterval(Itemandrun,3000);
+
+
+
+
+    function reload(){
+        location.reload();
+    }
+
+
+
+    function loadNowPrice(){
+        $.ajax({
+            url: '/item/happy/happy3',
+            method:'GET',
+            success: function(data){
+                var Pricenow = data.price;
+                console.log(Pricenow);
+                console.log("나는 성공");
+                var element = document.getElementById("nowPrice3");
+                element.innerHTML = Pricenow;
+            }
+        });
+    }
+    function loadBuyerList(){
+        $.ajax({
+            url : '/item/happy/happy1',
+            method : 'GET',
+            success : function(data){
+                var tradeLog3List = data;
+                var tableBody = document.querySelector('#buyer-list-container tbody');
+
+                tradeLog3List.forEach(function (tradeLog3){
+                    if(tradeLog3.buy==2) return;
+                    if(tradeLog3.checked==3) return;
+                    var row = document.createElement('tr');
+
+            // 각 열 (<td>)을 생성하고 데이터를 설정합니다.
+            var itemnameCell = document.createElement('td');
+            itemnameCell.textContent = tradeLog3.itemname;
+
+            var allsumCell = document.createElement('td');
+            allsumCell.textContent = tradeLog3.allsum;
+
+            var usernameCell = document.createElement('td');
+            usernameCell.textContent = tradeLog3.username;
+
+            // 행에 열을 추가합니다.
+            row.appendChild(itemnameCell);
+            row.appendChild(allsumCell);
+            row.appendChild(usernameCell);
+
+            // tbody에 행을 추가합니다.
+            tableBody.appendChild(row);
+            });
+            }
+
+        });
+    }
+
+    function loadSellerList() {
+
+        $.ajax({
+    url: '/item/happy/happy2', // 데이터를 제공하는 서버 엔드포인트를 지정해야 합니다.
+    method: 'GET',
+    success: function (data) {
+        var tradeLog3List = data; // 가져온 데이터
+        var tableBody = document.querySelector('#seller-list-container tbody'); // 데이터를 추가할 tbody 요소
+
+        // tradeLog3List의 각 항목을 순회하면서 HTML에 추가합니다.
+        tradeLog3List.forEach(function (tradeLog3) {
+            // 새로운 행 (<tr>) 요소 생성
+            if(tradeLog3.buy==1) return;
+            if(tradeLog3.checked==3) return;
+            var row = document.createElement('tr');
+
+            // 각 열 (<td>)을 생성하고 데이터를 설정합니다.
+            var itemnameCell = document.createElement('td');
+            itemnameCell.textContent = tradeLog3.itemname;
+
+            var allsumCell = document.createElement('td');
+            allsumCell.textContent = tradeLog3.allsum;
+
+            var usernameCell = document.createElement('td');
+            usernameCell.textContent = tradeLog3.username;
+
+            // 행에 열을 추가합니다.
+            row.appendChild(itemnameCell);
+            row.appendChild(allsumCell);
+            row.appendChild(usernameCell);
+
+            // tbody에 행을 추가합니다.
+            tableBody.appendChild(row);
+        });
+    }
+
+    });
+}
+
+
+
+
+
+</script>
+
+
+        </div>
+
+
+</body>
+</html>

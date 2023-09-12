@@ -1,0 +1,26 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<div  class="container my-3">
+    <div class="my-3 border-bottom">
+        <div>
+            <h4>아이템 추가</h4>
+        </div>
+    </div>
+    <form th:action="@{/item/signup}" th:object="${itemCreateForm}" method="post">
+
+        <div class="mb-3">
+            <label class="form-label">종목명</label>
+            <input type="text" th:field="*{Name}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">시작가</label>
+            <input type="text" th:field="*{StartPrice}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label  class="form-label">개수</label>
+            <input type="text" th:field="*{Howmany}" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">아이템등록</button>
+    </form>
+</div>
+</html>

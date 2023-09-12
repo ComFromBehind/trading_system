@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+
+<h2> 거래페이지</h2>
+<div th:if="${t==NoData}"> <td>해당 종목은 없습니다.</td>
+<!-- 에러부분 고칠 것 -->
+</div>
+종목명 : <span id ="here" th:text = "${t.get().name}"> </span>
+<hr>
+가격 : <span th:text = "${t.get().price}"></span>
+<hr>
+개수 : <span th:text = "${t.get().howmany}"></span>
+<br>
+<br>
+<div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    /*<![CDATA[*/
+      function thisfirst(){
+    var div1 = document.getElementsByName("buy");
+    var buysell = [[${buysell}]];
+    var user = "[[${user}]]";
+    var nowItem = document.getElementById("allsum").value;
+    var selectval;
+    var possible=false;
+    var budget = [[${budget}]];
+    var div2 = document.getElementById("howmany").value;
+    for(var i=0;i<div1.length;i++){
+        if(div1[i].checked){
+            selectval = parseInt(div1[i].value);
+        }
+    }
+        var form = document.getElementById("myForm");
+    console.log(nowItem);
+    console.log(budget);
+    if(user=="admin"){
+        alert("거래 성립");
+        form.submit();
+    }
+    else if(selectval==1&&(nowItem*div2>budget)){
+        alert("거래가 불가능합니다! 잔액 초과!");
+    }
+
+    else if((selectval<=1||buysell>=div2)&&div2!==""&&div2>0){
+        alert("거래 성립");
+        if(selectval==1){
+            var newBudget = budget-nowItem*div2;
+            $.ajax({
+                url : '/item/it',
+                type : 'POST',
+                data : {newBudget:newBudget},
+                success: function(response){
+                    console.log('성공', response);
+                    var form = document.getElementById("myForm");
+                    form.submit();
+                },
+                error:function(error){
+                    console.log('error' , error);
+                }
+            });
+        }
+        else{
+            var newBudget = budget
+            $.ajax({
+                url : '/item/it',
+                type : 'POST',
+                data : {newBudget:newBudget},
+                success: function(response){
+                    console.log('성공', response);
+                    var form = document.getElementById("myForm");
+                    form.submit();
+                },
+                error:function(error){
+                    console.log('error' , error);
+                }
+            });
+        }
+
+    }
+
+
+    else {
+        alert("거래가 불가능합니다! 판매 개수 초과!");
+    }
+
+
+   }
+
+ /*]]>*/
+</script>
+    <form th:action="@{/item/trade}" method="post" id="myForm">
+
+        <div> <input type="radio"  name="buy" value=1 > 구매 </div>
+        <div> <input type="radio"  name="buy" value=2> 판매</div>
+        구매자(판매자) : <span name="username" th:text="${username}"></span>
+        <br>
+        아이템 : <span name="itemname" th:text="${nowItem}" id="itemname" ></span>
+
+        <div>개수 : <input type="text" name="howmany" id="howmany" > </div>
+        <div> 판매 가능개수 : <span th:text="${buysell}"></span> </div>
+        <div>희망가격 : <input type="text" name="allsum" id="allsum" > </div>
+        <input type="button" onclick ="thisfirst()" value="거래가능확인">
+    </form>
+
+</div>
+
+</body>
+</html>
